@@ -1,0 +1,129 @@
+swagger: "2.0"
+
+info:
+  version: "0.0.1"
+  title: XuVi book API
+  description: This is XuVi book API
+  contact:
+    name: Minh
+    url: https://minh.xuvi.vn
+    email: minh@xuvi.vn
+  license:
+    name: GNU
+    url: https://minh.xuvi.vn
+
+host: api.book.xuvi.vn
+basePath: /v1/
+schemes:
+  - http
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+tags:
+  - name: books
+    description: Refer to books that are available in the XuViBook system.
+  - name: libraries
+    description: Refer to the library
+
+externalDocs:
+  description: This is external doc
+  url: https://xuvibook-docs.readthedocs.io/en/latest/?
+
+# Paths
+paths:
+  /book/{id}:
+    get:
+      summary: This is a get op
+      description: Return book identified by id
+      tags:
+        - books
+      externalDocs:
+        description: This is external doc
+        url: https://xuvibook-docs.readthedocs.io/en/latest/?
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - $ref: "#/parameters/IdInPath"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Book"
+
+        "404":
+          description: When a vacation package is NOT found
+          schema:
+            $ref: "#/definitions/NotFoundError"
+
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/GeneralError"
+      security:
+        # Array elements needed only in case of OAuth otherwise MUST be empty. In case of OAuth array has the scopes
+        - KeySecurity: []
+
+# Definitions
+definitions:
+  GeneralError:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  NotFoundError:
+    required:
+      - message
+      - hint
+    properties:
+      message:
+        type: string
+      hint:
+        type: string
+
+  Book:
+    properties:
+      title:
+        type: string
+      author:
+        type: string
+      description:
+        type: string
+      library:
+        $ref: "#/definitions/Library"
+
+  Library:
+    properties:
+      name:
+        type: string
+      location:
+        $ref: "#/definitions/Location"
+
+  Location:
+    required:
+      - city
+      - country
+    properties:
+      city:
+        type: string
+      country:
+        type: string
+
+parameters:
+  IdInPath:
+    name: id
+    in: path
+    type: string
+    required: true
+
+securityDefinitions:
+  KeySecurity:
+    type: apiKey
+    in: query
+    name: api_key
